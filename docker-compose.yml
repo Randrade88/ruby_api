@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  web:
+    image: ruby_docker
+    container_name: my_rails_app
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -b '0.0.0.0'"
+    volumes:
+      - .:/app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    networks:
+      my_network:
+        ipv4_address: 172.18.0.3
+
+  db:
+    image: postgres:latest
+    container_name: my_postgres_container
+    networks:
+      my_network:
+        ipv4_address: 172.18.0.2
+    environment:
+      POSTGRES_DB: ruby_api_development
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Pg@880311
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+networks:
+  my_network:
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
+
+volumes:
+  pgdata:
